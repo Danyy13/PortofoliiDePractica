@@ -1,25 +1,27 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Dani\\Documents\\Facultate\\An3\\Proiecte\\PortofoliiDePractica\\src\\src.csproj": {}
+    "C:\\Users\\pperh\\OneDrive\\Documents\\Facultate\\Proiecte\\PortofoliiDePractica\\src\\src.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Dani\\Documents\\Facultate\\An3\\Proiecte\\PortofoliiDePractica\\src\\src.csproj": {
+    "C:\\Users\\pperh\\OneDrive\\Documents\\Facultate\\Proiecte\\PortofoliiDePractica\\src\\src.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Dani\\Documents\\Facultate\\An3\\Proiecte\\PortofoliiDePractica\\src\\src.csproj",
+        "projectUniqueName": "C:\\Users\\pperh\\OneDrive\\Documents\\Facultate\\Proiecte\\PortofoliiDePractica\\src\\src.csproj",
         "projectName": "src",
-        "projectPath": "C:\\Users\\Dani\\Documents\\Facultate\\An3\\Proiecte\\PortofoliiDePractica\\src\\src.csproj",
-        "packagesPath": "C:\\Users\\Dani\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Dani\\Documents\\Facultate\\An3\\Proiecte\\PortofoliiDePractica\\src\\obj\\",
+        "projectPath": "C:\\Users\\pperh\\OneDrive\\Documents\\Facultate\\Proiecte\\PortofoliiDePractica\\src\\src.csproj",
+        "packagesPath": "C:\\Users\\pperh\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\pperh\\OneDrive\\Documents\\Facultate\\Proiecte\\PortofoliiDePractica\\src\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Dani\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\pperh\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -65,7 +67,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.308/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

@@ -1,4 +1,10 @@
-﻿using System.Globalization;
+﻿using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
+using System.Globalization;
+using System.Reflection.Metadata;
+using System.Security.Cryptography.X509Certificates;
+using NPOI.HSSF.Record;
 using NPOI.Util;
 using NPOI.XWPF.Model;
 using NPOI.XWPF.UserModel;
@@ -7,7 +13,7 @@ public enum TipRubrica
 {
     Simplu,
     Lista,
-    Tabel
+    Default
 }
 
 public class Program
@@ -15,39 +21,45 @@ public class Program
     public static void Main()
     {
         // Specifică calea unde vrei să salvezi fișierul generat
-        const string docxFilePath = "portofoliu-de-test.docx";
-        const string csvFilePath = "input.csv";
+        // const string docxFilePath = "portofoliu-de-test.docx";
+        const string csvFilePath = "../inputs/input.csv";
 
         List<Portofoliu> colectiePortofolii = citesteColectiePortofoliiDinCSV(csvFilePath); 
+        
+        foreach(Portofoliu portofoliu in colectiePortofolii)
+        {
+            string docxFilePath = "../portofolii/" + portofoliu.studentPracticant.nume + " " + portofoliu.studentPracticant.prenume + " - " + portofoliu.companie + " - portofoliu.docx";
+            
+            creazaDocumentWord(docxFilePath, portofoliu);
 
-        creazaDocumentWord(docxFilePath, colectiePortofolii[0]);
-
-        Console.WriteLine("Documentul a fost creat cu succes la " + docxFilePath);
+            Console.WriteLine("Documentul a fost creat cu succes la " + docxFilePath);
+        }
     }
-
-    // public static CT_AbstractNum creazaSablonNumerotareCifreArabe()
-    // {
-    //     CT_AbstractNum sablonCifreArabe = new CT_AbstractNum();
-    //     sablonCifreArabe.abstractNumId = "0";
-    //     CT_Lvl level = new CT_Lvl();
-    //     level.ilvl = "0";
-
-    //     level.numFmt = new CT_NumFmt();
-    //     level.numFmt.val = ST_NumberFormat.decimalEnclosedFullstop;
-
-    //     if(sablonCifreArabe.lvl == null)
-    //     {
-    //         sablonCifreArabe.lvl = new List<CT_Lvl>();
-    //     }
-    //     sablonCifreArabe.Add(level);
-
-    //     return sablonCifreArabe;
-    // }
 
     public static XWPFDocument creazaDocumentWord(string filePath, Portofoliu portofoliu)
     {
         // Creează un document nou
         var document = new XWPFDocument();
+
+        // insereaza logo UPT in header
+        // XWPFParagraph logo = document.CreateParagraph();
+        // XWPFRun logoRun = logo.CreateRun();
+        // logo.Alignment = ParagraphAlignment.RIGHT;
+        // string imagePath = "../assets/logoupt.jpg";
+
+        // if(File.Exists(imagePath))
+        // {
+        //     using(FileStream imageData = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+        //     {
+        //         int width = Units.ToEMU(100);
+        //         int height = Units.ToEMU(100);
+
+        //         logoRun.AddPicture(imageData, (int)PictureType.JPEG, "logoupt.jpg", width, height);
+        //     }
+        // } else
+        // {
+        //     Console.WriteLine("Fisierul nu exista la calea specificata");
+        // }
 
         // Adauga titlul
         scrieTitlu(document);
@@ -109,10 +121,32 @@ public class Program
         descriereRubrica = portofoliu.tutore.nume + " " + portofoliu.tutore.prenume;
         scrieRubrica(document, titluRubrica, descriereRubrica, numId, numbering, TipRubrica.Simplu);
         
-        // 9
+        // 11
         titluRubrica = "Drepturi şi responsabilităţi ale tutorelui de practică desemnat de partenerul de practică: ";
         descriereRubrica = portofoliu.tutore.responsabilitati;
-        scrieRubrica(document, titluRubrica, descriereRubrica, numId, numbering, TipRubrica.Lista);     
+        scrieRubrica(document, titluRubrica, descriereRubrica, numId, numbering, TipRubrica.Lista);
+        
+        // 12 - nu exista un raspuns in exemplu
+
+        // 13 - scrie doar titlul rubricii si apoi creaza tabelul
+        titluRubrica = "Definirea competențelor care vor fi dobândite pe perioada stagiului de practică: ";
+        descriereRubrica = "";
+        scrieRubrica(document, titluRubrica, descriereRubrica, numId, numbering, TipRubrica.Default);
+        // creaza tabelul de competente
+        scrieTabelCompetente(document, portofoliu);
+
+        // 14
+        titluRubrica = "Modalităţi de evaluare a pregătirii profesionale dobândite de practicant pe perioada stagiului de pregătire practică: ";
+        descriereRubrica = portofoliu.stagiuDePractica.modalitatiEvaluare;
+        scrieRubrica(document, titluRubrica, descriereRubrica, numId, numbering, TipRubrica.Simplu);
+
+        // Paragraf de final
+        XWPFParagraph paragrafFinal = document.CreateParagraph();
+        XWPFRun runFinal = paragrafFinal.CreateRun();
+        runFinal.SetText("Evaluarea practicantului pe perioada stagiului de pregătire practică se va face de către tutore.");
+
+        // creaza ultimul tabel - tabel de semnaturi
+        scrieTabelSemnaturi(document, portofoliu.profesorCoordonator, portofoliu.tutore, portofoliu.studentPracticant);
 
         // Salveaza fisierul
         using(var fileSave = new FileStream(filePath, FileMode.Create))
@@ -167,13 +201,14 @@ public class Program
             case TipRubrica.Simplu:
                 runDescriere.SetText(descriereRubrica);
                 break;
+
             case TipRubrica.Lista:
-                // runDescriere.AddCarriageReturn();
                 string[] lines = descriereRubrica.Split(';'); // separa liniile listei
                 
                 // creaza lista nenumerotata avand caractere '-'
                 string numIdSubLista = numbering.AddNum("-");
 
+                // scrie elementele listei
                 foreach(string line in lines)
                 {
                     XWPFParagraph listItem = document.CreateParagraph();
@@ -182,13 +217,106 @@ public class Program
                     XWPFRun listItemRun = listItem.CreateRun();
                     listItemRun.SetText(line);      
                 }
-
-                // runDescriere.SetText(descriereRubrica);
                 break;
 
             default:
                 break;
         }
+    }
+
+    public static void scrieTabelCompetente(XWPFDocument document, Portofoliu portofoliu)
+    {   
+        // date pentru randuri si coloane
+        int rows = portofoliu.stagiuDePractica.listaCompetente.Count + 1; // numarul de randuri este egal cu numarul de competente + randul de header
+        int cols = 6; // numar de atribute pentru fiecare compententa
+
+        // date pentru latimea celulelor
+        const int totalWidth = 5000;
+        // int[] colWidths = { 600, 3000, 1500, 1500, 1500, 900 };
+
+        XWPFTable table = document.CreateTable(rows, cols);
+        table.Width = totalWidth;
+
+        // text cap tabel
+        string[] tableHeaderStrings =
+        {
+            "Nr. Crt.", "Competenta", "Modul de pregatire", "Locul de Munca", "Activitati Planificate", "Observatii"
+        };
+
+        // scrie cap tabel
+        var headerRow = table.GetRow(0);
+        for(int i=0;i<cols;i++)
+        {
+            // table.SetColumnWidth(i, Convert.ToUInt64(colWidths[i]));
+            var headerCell = headerRow.GetCell(i);
+
+            // seteazaLatimeCelula(headerCell, colWidths[i]);
+            headerCell.SetText(tableHeaderStrings[i]);
+        }
+
+        // completare date
+        for(int i=0;i<portofoliu.stagiuDePractica.listaCompetente.Count;i++) // incepem de la 1 pentru ca ignoram randul header
+        {
+            Competenta compententa = portofoliu.stagiuDePractica.listaCompetente[i];
+            var row = table.GetRow(i + 1);
+
+            row.GetCell(0).SetText((i + 1).ToString());
+            row.GetCell(1).SetText(compententa.descriere);
+            row.GetCell(2).SetText(compententa.modPregatire);
+            row.GetCell(3).SetText(compententa.locDeMunca);
+            row.GetCell(4).SetText(compententa.activitati);
+            row.GetCell(5).SetText(compententa.observatii);
+        }
+    }
+
+    public static void scrieTabelSemnaturi(XWPFDocument document, ProfesorCoordonator profesorCoordonator, Tutore tutore, StudentPracticant studentPracticant)
+    {
+        // date pentru randuri si coloane
+        string[] rowsText = { "", "Nume si prenume", "Functia", "Data", "Semnatura" };
+        string[] columnsText = { "", "Cadru didactic supervizor", "Tutore", "Practicant" }; // prima celula este goala
+
+        int rows = rowsText.Length;     
+        int cols = columnsText.Length;        
+
+        // date pentru latimea celulelor
+        const int totalWidth = 5000;
+
+        XWPFTable table = document.CreateTable(rows, cols);
+        table.Width = totalWidth;
+
+        // scrie cap tabel
+        var headerRow = table.GetRow(0);
+        for(int i=0;i<cols;i++)
+        {
+            XWPFTableCell headerCell = headerRow.GetCell(i); 
+            seteazaLatimeCelula(headerCell, totalWidth / cols);
+
+            var paragraph = headerCell.AddParagraph();
+            var run = paragraph.CreateRun();
+            run.IsBold = true;
+            run.SetText(columnsText[i]);
+
+            // headerCell.SetText(columnsText[i]);
+        }
+
+        Persoana[] persons = { profesorCoordonator, tutore, studentPracticant };
+
+        // completare date
+        for(int i=1;i<rows;i++)
+        {
+            var row = table.GetRow(i);
+
+            row.GetCell(0).SetText(rowsText[i]);
+        }
+    }
+
+    public static void seteazaLatimeCelula(XWPFTableCell cell, int width)
+    {
+        var ctTc = cell.GetCTTc();
+        var tcPr = ctTc.tcPr ?? ctTc.AddNewTcPr();
+        var tcW = tcPr.tcW ?? tcPr.AddNewTcW();
+        tcW.w = width.ToString();
+        tcW.type = NPOI.OpenXmlFormats.Wordprocessing.ST_TblWidth.dxa; // Unitatea de masura pentru latime este DXA
     }
 
     public static List<Portofoliu> citesteColectiePortofoliiDinCSV(string csvFilePath)
@@ -238,6 +366,7 @@ public class Program
             string prenumeStudent = fields[columns["prenumeStudent"]];
             string functieStudent = fields[columns["functieStudent"]];
             DateTime dataSemnaturiiStudent = DateTime.ParseExact(fields[columns["dataSemnaturiiStudent"]], "dd/MM/yyyy", CultureInfo.InvariantCulture);
+            string companie = fields[columns["companie"]];
 
             List<Competenta> listaCompetente = new List<Competenta>();
             string competente = fields[columns["competente"]];
@@ -256,7 +385,7 @@ public class Program
             Tutore tutore = new Tutore(idTutore, numeTutore, prenumeTutore, functieTutore, dataSemnaturiiTutore, responsabilitatiTutore);
             StudentPracticant studentPracticant = new StudentPracticant(idStudent, numeStudent, prenumeStudent, functieStudent, dataSemnaturiiStudent);
 
-            Portofoliu portofoliu = new Portofoliu(stagiuDePractica, studentPracticant, tutore, profesorCoordonator);
+            Portofoliu portofoliu = new Portofoliu(stagiuDePractica, studentPracticant, tutore, profesorCoordonator, companie);
             colectiePortofolii.Add(portofoliu);
         }
 
