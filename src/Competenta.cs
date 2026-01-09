@@ -1,10 +1,10 @@
 public class Competenta
 {
-    private string descriere { get; }
-    private string modPregatire { get; }
-    private string locDeMunca { get; }
-    private string activitati { get; }
-    private string observatii { get; }
+    public string descriere { get; }
+    public string modPregatire { get; }
+    public string locDeMunca { get; }
+    public string activitati { get; }
+    public string observatii { get; }
 
     public Competenta(string descriere, string modPregatire, string locDeMunca, string activitati, string observatii = "")
     {

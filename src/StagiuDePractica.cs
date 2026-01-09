@@ -1,15 +1,15 @@
 public class StagiuDePractica
 {
     private int id;
-    private int durata { get; }
-    private string calendar { get; }
-    private PerioadaStagiu perioadaStagiu { get; }
-    private string adresa { get; }
-    private string locatiiDeplasare { get; }
-    private string listaConditii { get; }
-    private string modalitatiComplementaritate { get; }
-    private List<Competenta> listaCompetente { get; }
-    private string modalitatiEvaluare { get; }
+    public int durata { get; }
+    public string calendar { get; }
+    public PerioadaStagiu perioadaStagiu { get; }
+    public string adresa { get; }
+    public string locatiiDeplasare { get; }
+    public string listaConditii { get; }
+    public string modalitatiComplementaritate { get; }
+    public List<Competenta> listaCompetente { get; }
+    public string modalitatiEvaluare { get; }
 
     public StagiuDePractica(int id, int durata, string calendar, PerioadaStagiu perioadaStagiu, string adresa, string locatiiDeplasare, string listaConditii, string modalitatiComplementaritate, List<Competenta> listaCompetente, string modalitatiEvaluare)
     {

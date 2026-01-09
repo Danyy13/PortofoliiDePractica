@@ -1,14 +1,15 @@
 public class Portofoliu
 {
     private int id;
-    private StagiuDePractica stagiuDePractica;
-    private StudentPracticant studentPracticant;
-    private Tutore tutore;
-    private ProfesorCoordonator profesorCoordonator;
+    public StagiuDePractica stagiuDePractica { get; }
+    public StudentPracticant studentPracticant { get; }
+    public Tutore tutore { get; }
+    public ProfesorCoordonator profesorCoordonator { get; }
+    public static int idCount = 0;
 
-    public Portofoliu(int id, StagiuDePractica stagiuDePractica, StudentPracticant studentPracticant, Tutore tutore, ProfesorCoordonator profesorCoordonator)
+    public Portofoliu(StagiuDePractica stagiuDePractica, StudentPracticant studentPracticant, Tutore tutore, ProfesorCoordonator profesorCoordonator)
     {
-        this.id = id;
+        this.id = idCount++; // id-urile sunt asignate automat crescator incepand de la 0
         this.stagiuDePractica = stagiuDePractica;
         this.studentPracticant = studentPracticant;
         this.tutore = tutore;

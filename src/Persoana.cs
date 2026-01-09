@@ -1,10 +1,10 @@
 public class Persoana
 {
     protected int id;
-    protected string nume;
-    protected string prenume;
-    protected string functie;
-    protected DateTime dataSemnare;
+    public string nume { get; protected set;}
+    public string prenume { get; protected set;}
+    public string functie { get; protected set;}
+    public DateTime dataSemnare { get; protected set;}
 
     public Persoana(int id, string nume, string prenume, string functie, DateTime dataSemnare)
     {

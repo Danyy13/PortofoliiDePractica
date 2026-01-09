@@ -1,6 +1,6 @@
 public class Tutore : Persoana
 {
-    private string responsabilitati;
+    public string responsabilitati { get; }
 
     public Tutore(int id, string nume, string prenume, string functie, DateTime dataSemnare, string responsabilitati) : base(id, nume, prenume, functie, dataSemnare)
     {
